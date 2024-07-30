@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-function AddCustomerDialog() {
+function AddCustomerDialog({open,onClose}) {
     const classes = useStyles()
     const [addresses, setAddresses] = useState([1])
 
@@ -53,7 +53,7 @@ function AddCustomerDialog() {
     return (
         <>
             <Dialog
-                open={true}
+                open={open}
                 className={classes.dialog}
             >
                 <Grid className={classes.mainContainer}>
@@ -63,7 +63,7 @@ function AddCustomerDialog() {
                         <Grid item xs={12}>
                             <Grid style={{ height: '2rem', margin: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Box style={{ fontSize: '20px', fontWeight: 'bold' }}>Add Customer</Box>
-                                <Box><IconButton><CloseIcon style={{ fontSize: '30px', cursor: 'pointer' }} /></IconButton></Box>
+                                <Box onClick={onClose}><IconButton><CloseIcon style={{ fontSize: '30px', cursor: 'pointer' }} /></IconButton></Box>
                             </Grid>
                         </Grid>
 
