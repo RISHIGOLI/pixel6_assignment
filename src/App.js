@@ -1,24 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import { Grid } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import AddCustomerDialog from './components/AddCustomerDialog';
+
+const useStyles = makeStyles((theme) => ({
+  mainRootContainer: {
+    height: '100vh', width: '100vw', display: 'flex', justifyContent: 'center', alignItems: 'center'
+  }
+}))
 
 function App() {
+  const classes = useStyles()
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Grid className={classes.mainRootContainer}>
+      <Grid style={{height: '90%', width: '90%', backgroundColor: 'pink'}}>
+          <AddCustomerDialog/>
+      </Grid>
+    </Grid>
   );
 }
 
