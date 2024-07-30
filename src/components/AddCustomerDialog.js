@@ -15,7 +15,8 @@ const useStyles = makeStyles((theme) => ({
         '& .MuiDialog-paperWidthSm': {
             /* Add your custom styles for paperWidthSm here */
             maxWidth: '100vw', // Example custom style
-            maxHeight: '100vh'
+            maxHeight: '90vh',
+            height: '90vh'
         },
     },
     mainContainer: {
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-function AddCustomerDialog({open,onClose}) {
+function AddCustomerDialog({ open, onClose }) {
     const classes = useStyles()
     const [addresses, setAddresses] = useState([1])
 
@@ -46,8 +47,10 @@ function AddCustomerDialog({open,onClose}) {
     }, [addresses])
 
     function deleteAddressHandler(address) {
-        const newAddresses = addresses.filter((addresss) => addresss !== address)
-        setAddresses(newAddresses)
+        if (addresses.length > 1) {
+            const newAddresses = addresses.filter((addresss) => addresss !== address)
+            setAddresses(newAddresses)
+        }
     }
 
     return (
@@ -57,11 +60,11 @@ function AddCustomerDialog({open,onClose}) {
                 className={classes.dialog}
             >
                 <Grid className={classes.mainContainer}>
-                    <Grid container spacing={0} margin="0.4rem">
+                    <Grid container spacing={0}>
 
                         {/* title container */}
-                        <Grid item xs={12}>
-                            <Grid style={{ height: '2rem', margin: '5px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Grid item xs={12} style={{ position: 'sticky', top: 0, zIndex: 1200, backgroundColor: 'white', borderBottom: '1px solid lightgray', height: '3rem' }}>
+                            <Grid style={{ height: '2rem', margin: '5px 0px 5px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Box style={{ fontSize: '20px', fontWeight: 'bold' }}>Add Customer</Box>
                                 <Box onClick={onClose}><IconButton><CloseIcon style={{ fontSize: '30px', cursor: 'pointer' }} /></IconButton></Box>
                             </Grid>

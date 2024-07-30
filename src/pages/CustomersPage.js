@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 function CustomersPage() {
     const classes = useStyles()
     const [customers, setCustomers] = useState(Array(20).fill(1))
-    const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(false)
+    const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(true)
     return (
         <>
             <Grid className={classes.customersPageContainer}>
