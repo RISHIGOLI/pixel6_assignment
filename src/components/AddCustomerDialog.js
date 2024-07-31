@@ -1,8 +1,9 @@
 import { Grid, Box, Dialog, TextField, IconButton, Button, Divider } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import CloseIcon from '@mui/icons-material/Close'
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import { useDispatch,useSelector } from 'react-redux'
+import { addCustomer } from '../store/logic/customers/CustomerSlice'
 
 const useStyles = makeStyles((theme) => ({
     dialog: {
@@ -34,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
 
 function AddCustomerDialog({ open, onClose }) {
     const classes = useStyles()
+    const dispatch = useDispatch()
     const [addresses, setAddresses] = useState([1])
     const [body, setBody] = useState(
         {
@@ -91,6 +93,9 @@ function AddCustomerDialog({ open, onClose }) {
     useEffect(() => {
         console.log('body', body);
     }, [body])
+
+    const {customers} = useSelector((state)=>state.customers)
+    console.log('customers from store = ',customers);
 
     return (
         <>
@@ -242,6 +247,10 @@ function AddCustomerDialog({ open, onClose }) {
                                 }
                                 <Grid item xs={12} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                                     <Button className={classes.activeButton} onClick={() => setAddresses((addresses) => ([...addresses, addresses[addresses.length - 1] + 1]))}>Add More</Button>
+                                </Grid>
+                                <Grid item xs={12}><Divider /></Grid>
+                                <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Button className={classes.activeButton} onClick={() => dispatch(addCustomer(body))}>Add Customer</Button>
                                 </Grid>
                             </Grid>
                         </Grid>
