@@ -45,7 +45,7 @@ function CustomersPage() {
     const dispatch = useDispatch()
     const [editCustomer, setEditCustomer] = useState(false)
     const [customerIndex, setCustomerIndex] = useState(null)
-    const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(true)
+    const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(false)
 
     function editCustomerHandler(customerIndex) {
         setCustomerIndex(customerIndex)
@@ -115,7 +115,7 @@ function CustomersPage() {
 
                 </Grid>
                 {
-                    openAddCustomerDialog && <AddCustomerDialog open={openAddCustomerDialog} onClose={() => setOpenAddCustomerDialog(false)} editCustomerDetails={editCustomer} customerIndex={customerIndex} />
+                    openAddCustomerDialog && <AddCustomerDialog open={openAddCustomerDialog} onClose={() => {setOpenAddCustomerDialog(false);setCustomerIndex(null);setEditCustomer(false)}} editCustomerDetails={editCustomer} customerIndex={customerIndex} />
                 }
             </Grid>
         </>

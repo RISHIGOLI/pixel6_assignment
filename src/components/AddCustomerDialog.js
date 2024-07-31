@@ -6,10 +6,11 @@ import CheckIcon from '@mui/icons-material/Check';
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { addCustomer, editCustomer } from '../store/logic/customers/CustomerSlice'
-import { verifyPan } from '../store/logic/pan/PanSlice'
+import { resetPanDataInitialState, verifyPan } from '../store/logic/pan/PanSlice'
 import { instance } from '../services/axios-config'
 import Pixel6CircularProgress from '../utils/Pixel6CircularProgress'
 import ErrorIcon from '@mui/icons-material/Error';
+import { getPostCodeDetails, resetPostCodeInitialState } from '../store/logic/postcode/PostCodeSlice';
 
 const useStyles = makeStyles((theme) => ({
     dialog: {
@@ -69,6 +70,8 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
     const dispatch = useDispatch()
     const { customers } = useSelector((state) => state.customers)
     const { status, statusCode, message, fullName, panNumber, isValid } = useSelector((state) => state.panData)
+    const { status: postCodeStatus, statusCode: postCodeStatusCode, city, state, message: postCodeMessage } = useSelector((state) => state.postCodeData)
+    const [selectedAddressIndex, setSelectedAddressIndex] = useState(null)
     const [body, setBody] = useState(
         {
             customerName: '',
@@ -114,7 +117,24 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
     }
 
     function handleAddressChange(e, index) {
-        console.log(index);
+        setSelectedAddressIndex(index)
+        setBody((body) => {
+            const updatedAddresses = [...body.addresses]
+            updatedAddresses[index] = {
+                ...updatedAddresses[index],
+                [e.target.name]: e.target.value
+            }
+            return {
+                ...body,
+                addresses: updatedAddresses
+            }
+
+        })
+    }
+
+    function handlePostCodeChange(e, index) {
+        setSelectedAddressIndex(index)
+        dispatch(getPostCodeDetails({ postcode: e.target.value }))
         setBody((body) => {
             const updatedAddresses = [...body.addresses]
             updatedAddresses[index] = {
@@ -154,28 +174,44 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
             ...body,
             [e.target.name]: e.target.value
         })
-        
+
     }
 
     useEffect(() => {
-        console.log("editable form true");
-        if (editCustomerDetails) {
+        if (editCustomerDetails === true && customerIndex !== null) {
+            console.log("editable form true");
             setBody(customers[customerIndex])
+        }
+
+        return () => {
+            dispatch(resetPostCodeInitialState())
+            dispatch(resetPanDataInitialState())
         }
     }, [])
 
     useEffect(() => {
-        console.log('body', body);
-    }, [body])
-
-    useEffect(()=>{
         console.log('full name assignment block');
         if (status === 'Success' && fullName.length > 1) {
             setBody((body) => ({ ...body, customerName: fullName }))
-        }else{
-            setBody((body) => ({...body, customerName: ''}))
         }
-    },[fullName])
+    }, [fullName])
+
+    useEffect(() => {
+
+        setBody((body) => {
+            const updatedAddresses = [...body.addresses]
+            updatedAddresses[selectedAddressIndex] = {
+                ...updatedAddresses[selectedAddressIndex],
+                city: city[0]?.name,
+                state: state[0]?.name
+            }
+            return {
+                ...body,
+                addresses: updatedAddresses
+            }
+
+        })
+    }, [city, state, postCodeStatus])
 
     return (
         <>
@@ -312,7 +348,20 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                                         value={address?.postCode}
                                                         fullWidth
                                                         className={classes.textField}
-                                                        onChange={(e) => handleAddressChange(e, index)}
+                                                        onChange={(e) => handlePostCodeChange(e, index)}
+                                                        InputProps={index === selectedAddressIndex && {
+                                                            endAdornment: (
+                                                                <IconButton
+                                                                    className={classes.clearButton}
+                                                                // onClick={() => setBody({ ...body, panNumber: '' })}
+                                                                >
+                                                                    {
+                                                                        postCodeStatus === 'Pending' ? <Pixel6CircularProgress /> : postCodeStatus === 'Success' ? <CheckIcon style={{ fontSize: '30px', color: 'green', fontWeight: 'bold' }} /> : postCodeStatus === 'Failed' ? <ErrorIcon className={classes.ErrorIcon} /> : ''
+                                                                    }
+
+                                                                </IconButton>
+                                                            ),
+                                                        }}
                                                     />
                                                 </Box>
                                             </Grid>
