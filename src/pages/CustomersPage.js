@@ -45,7 +45,7 @@ function CustomersPage() {
     const dispatch = useDispatch()
     const [editCustomer, setEditCustomer] = useState(false)
     const [customerIndex, setCustomerIndex] = useState(null)
-    const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(false)
+    const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(true)
 
     function editCustomerHandler(customerIndex) {
         setCustomerIndex(customerIndex)

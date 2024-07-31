@@ -1,9 +1,15 @@
+import axios from 'axios'
 import { Grid, Box, Dialog, TextField, IconButton, Button, Divider } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import CloseIcon from '@mui/icons-material/Close'
+import CheckIcon from '@mui/icons-material/Check';
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { addCustomer, editCustomer } from '../store/logic/customers/CustomerSlice'
+import { verifyPan } from '../store/logic/pan/PanSlice'
+import { instance } from '../services/axios-config'
+import Pixel6CircularProgress from '../utils/Pixel6CircularProgress'
+import ErrorIcon from '@mui/icons-material/Error';
 
 const useStyles = makeStyles((theme) => ({
     dialog: {
@@ -30,6 +36,31 @@ const useStyles = makeStyles((theme) => ({
             color: 'white !important',
         },
         textTransform: 'none !important'
+    },
+    textField: {
+        '& .MuiFormLabel-root, & .MuiInputLabel-root': {
+            marginTop: '0px',
+            '&:focus': {
+                color: 'gray'
+            }
+        },
+
+        '& .MuiFormControl-root, & .MuiTextField-root': {
+            marginLeft: '0px',
+        },
+
+
+        '& .MuiFormLabel-root, & .MuiInputLabel-root.Mui-focused': {
+            color: 'gray'
+        },
+
+        '& .MuiOutlinedInput-root': {
+            paddingRight: '0px',
+            '&.Mui-focused fieldset': {
+                borderColor: 'rgb(127, 12, 134)', // Change this color to the desired outline color
+                borderWidth: '1px'
+            }
+        },
     }
 }))
 
@@ -37,11 +68,12 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
     const classes = useStyles()
     const dispatch = useDispatch()
     const { customers } = useSelector((state) => state.customers)
+    const { status, statusCode, message, fullName, panNumber, isValid } = useSelector((state) => state.panData)
     const [body, setBody] = useState(
         {
             customerName: '',
             customerEmail: '',
-            panNo: '',
+            panNumber: '',
             mobileNo: '',
             addresses: [
                 {
@@ -98,11 +130,13 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
     }
 
     function deleteAddressHandler(addressIndex) {
-        const updatedAddresses = body.addresses.filter((address, index) => index !== addressIndex)
-        setBody({
-            ...body,
-            addresses: updatedAddresses
-        })
+        if (body.addresses.length > 1) {
+            const updatedAddresses = body.addresses.filter((address, index) => index !== addressIndex)
+            setBody({
+                ...body,
+                addresses: updatedAddresses
+            })
+        }
     }
 
     function addCustomerHandler() {
@@ -113,8 +147,16 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
         }
     }
 
-    function panInputHandler(){
-        
+    function panInputHandler(e) {
+        console.log('value:', e.target.value);
+        dispatch(verifyPan({ body: e.target.value }))
+        setBody({
+            ...body,
+            [e.target.name]: e.target.value
+        })
+        if (status === 'Success' && fullName.length > 1) {
+            setBody((body) => ({ ...body, customerName: fullName }))
+        }
     }
 
     useEffect(() => {
@@ -127,8 +169,6 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
     useEffect(() => {
         console.log('body', body.addresses);
     }, [body])
-
-
 
     return (
         <>
@@ -150,7 +190,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                     variant="outlined"
                                     label='Full Name'
                                     name="customerName"
-                                    value={body?.customerName}
+                                    value={body?.customerName || fullName}
                                     fullWidth
                                     className={classes.textField}
                                     onChange={inputHandler}
@@ -179,11 +219,24 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                 <TextField
                                     variant="outlined"
                                     label='PAN No'
-                                    name="panNo"
-                                    value={body?.panNo}
+                                    name="panNumber"
+                                    value={body?.panNumber}
                                     fullWidth
                                     className={classes.textField}
                                     onChange={panInputHandler}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <IconButton
+                                                className={classes.clearButton}
+                                                onClick={() => setBody({ ...body, placeName: '' })}
+                                            >
+                                                {
+                                                    status === 'Pending' ? <Pixel6CircularProgress /> : status === 'Success' ? <CheckIcon style={{ fontSize: '30px', color: 'green', fontWeight: 'bold' }} /> : status === 'Failed' ? <ErrorIcon className={classes.ErrorIcon} /> : ''
+                                                }
+
+                                            </IconButton>
+                                        ),
+                                    }}
                                 />
                             </Box>
                         </Grid>

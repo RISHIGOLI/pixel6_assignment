@@ -19,7 +19,7 @@ const PanSlice = createSlice({
                 console.log('payload for pending state',action.payload);
                 return {
                     ...state,
-                    status: 'pending',
+                    status: 'Pending',
                 }
             })
             .addCase(verifyPan.fulfilled,(state,action)=>{
@@ -48,7 +48,7 @@ export const { } = PanSlice.actions
 export default PanSlice.reducer
 
 export const verifyPan = createAsyncThunk(
-    'verifyPan',
+    'pan/verifyPan',
     async ({ body }, thunkAPI) => {
         try {
             const response = await verifyPanAPI(body)
