@@ -2,6 +2,7 @@ import { Grid, Box, Button, Divider } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useState } from 'react'
 import AddCustomerDialog from '../components/AddCustomerDialog'
+import { useSelector } from 'react-redux'
 
 const useStyles = makeStyles((theme) => ({
     customersPageContainer: {
@@ -39,7 +40,8 @@ const useStyles = makeStyles((theme) => ({
 
 function CustomersPage() {
     const classes = useStyles()
-    const [customers, setCustomers] = useState(Array(20).fill(1))
+    const { customers } = useSelector((state) => state.customers)
+
     const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(false)
     return (
         <>
@@ -63,22 +65,28 @@ function CustomersPage() {
                                 </Grid>
                                 <Grid style={{ height: '100%', width: '100%', overflowY: 'auto', border: '1px solid gray' }}>
                                     {
-                                        customers.map((item, index) => (
+                                        customers.map((customer, index) => (
                                             <Grid style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0px', borderBottom: '1px solid lightgrey', minHeight: '4rem', overflow: 'hidden' }} key={index}>
-                                                <Box style={{ width: '5%' }} className={classes.column}>Sr No</Box>
-                                                <Box style={{ width: '20%' }} className={classes.column}>Customer Name</Box>
-                                                <Box style={{ width: '20%' }} className={classes.column}>Email</Box>
-                                                <Box style={{ width: '15%' }} className={classes.column}>Mobile No</Box>
-                                                <Box style={{ width: '15%' }} className={classes.column}>PAN No</Box>
-                                                <Box style={{ width: '30%', height: '100%'}} className={classes.column}>
-                                                    <Grid style={{ height: '100%', width: '100%', backgroundColor: 'lightgray', margin: '0px 5px', display: 'flex', flexDirection: 'column' }}>
-                                                        <Box>Address Line 1: asfd afasdf asdfasdf</Box>
-                                                        <Box>Address Line 2: asdfa asdfsdfas asdf</Box>
-                                                        <Box>PostCode: 413005</Box>
-                                                        <Box>City : Solapur</Box>
-                                                        <Box>State : Maharashtra</Box>
-                                                    </Grid>
+                                                <Box style={{ width: '5%' }} className={classes.column}>{index}</Box>
+                                                <Box style={{ width: '20%' }} className={classes.column}>{customer.customerName}</Box>
+                                                <Box style={{ width: '20%' }} className={classes.column}>{customer.customerEmail}</Box>
+                                                <Box style={{ width: '15%' }} className={classes.column}>{customer.mobileNo}</Box>
+                                                <Box style={{ width: '15%' }} className={classes.column}>{customer.panNo}</Box>
+
+                                                <Box style={{ width: '30%', height: '100%', flexDirection: 'column' }} className={classes.column}>
+                                                    {
+                                                        customer.addresses.map((address, index) => (
+                                                            <Grid style={{ height: '100%', width: '100%', backgroundColor: 'lightgray', margin: '0px 5px', display: 'flex', flexDirection: 'column' }}>
+                                                                <Box>{`Address Line1 : ${address.addressLine1}`}</Box>
+                                                                <Box>{`Address Line2 : ${address.addressLine2}`}</Box>
+                                                                <Box>{`Post Code : ${address.postCode}`}</Box>
+                                                                <Box>{`City : ${address.city}`}</Box>
+                                                                <Box>{`State : ${address.state}`}</Box>
+                                                            </Grid>
+                                                        ))
+                                                    }
                                                 </Box>
+
                                                 <Box style={{ width: '15%', border: 'none' }} className={classes.column}>
                                                     <Button className={classes.activeButton}>Edit</Button>
                                                     <Button className={classes.activeButton}>Delete</Button>

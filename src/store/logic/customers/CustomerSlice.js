@@ -14,7 +14,7 @@ const CustomerSlice = createSlice({
         addCustomer: (state,action) => {
             return {
                 ...state,
-                customers: action.payload
+                customers: [...state.customers, action.payload]
             }
         }
     }
