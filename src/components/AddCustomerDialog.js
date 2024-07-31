@@ -35,6 +35,23 @@ const useStyles = makeStyles((theme) => ({
 function AddCustomerDialog({ open, onClose }) {
     const classes = useStyles()
     const [addresses, setAddresses] = useState([1])
+    const [body, setBody] = useState(
+        {
+            customerName: '',
+            customerEmail: '',
+            panNo: '',
+            mobileNo: '',
+            addresses: [
+                {
+                    addressLine1: '',
+                    addressLine2: '',
+                    postCode: '',
+                    city: '',
+                    state: ''
+                }
+            ]
+        }
+    )
 
     useEffect(() => {
         console.log(addresses);
@@ -46,6 +63,34 @@ function AddCustomerDialog({ open, onClose }) {
             setAddresses(newAddresses)
         }
     }
+
+    function inputHandler(e) {
+        console.log('name:', e.target.name, ' value:', e.target.value);
+        setBody({
+            ...body,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    function handleAddressChange(e, index) {
+        console.log(index);
+        setBody((body) => {
+            const updatedAddresses = [...body.addresses]
+            updatedAddresses[index] = {
+                ...updatedAddresses[index],
+                [e.target.name]: e.target.value
+            }
+            return {
+                ...body,
+                addresses: updatedAddresses
+            }
+
+        })
+    }
+
+    useEffect(() => {
+        console.log('body', body);
+    }, [body])
 
     return (
         <>
@@ -66,9 +111,10 @@ function AddCustomerDialog({ open, onClose }) {
                                 <TextField
                                     variant="outlined"
                                     label='Full Name'
-                                    name="name"
+                                    name="customerName"
                                     fullWidth
                                     className={classes.textField}
+                                    onChange={inputHandler}
                                 />
                             </Box>
                         </Grid>
@@ -79,9 +125,10 @@ function AddCustomerDialog({ open, onClose }) {
                                 <TextField
                                     variant="outlined"
                                     label='Email'
-                                    name="email"
+                                    name="customerEmail"
                                     fullWidth
                                     className={classes.textField}
+                                    onChange={inputHandler}
                                 />
                             </Box>
                         </Grid>
@@ -95,6 +142,7 @@ function AddCustomerDialog({ open, onClose }) {
                                     name="panNo"
                                     fullWidth
                                     className={classes.textField}
+                                    onChange={inputHandler}
                                 />
                             </Box>
                         </Grid>
@@ -108,6 +156,7 @@ function AddCustomerDialog({ open, onClose }) {
                                     name="mobileNo"
                                     fullWidth
                                     className={classes.textField}
+                                    onChange={inputHandler}
                                 />
                             </Box>
                         </Grid>
@@ -130,9 +179,10 @@ function AddCustomerDialog({ open, onClose }) {
                                                     <TextField
                                                         variant="outlined"
                                                         label='Address Line 1'
-                                                        name="mobileNo"
+                                                        name="addressLine1"
                                                         fullWidth
                                                         className={classes.textField}
+                                                        onChange={(e) => handleAddressChange(e, index)}
                                                     />
                                                 </Box>
                                             </Grid>
@@ -141,9 +191,10 @@ function AddCustomerDialog({ open, onClose }) {
                                                     <TextField
                                                         variant="outlined"
                                                         label='Address Line 2'
-                                                        name="mobileNo"
+                                                        name="addressLine2"
                                                         fullWidth
                                                         className={classes.textField}
+                                                        onChange={(e) => handleAddressChange(e, index)}
                                                     />
                                                 </Box>
                                             </Grid>
@@ -153,9 +204,10 @@ function AddCustomerDialog({ open, onClose }) {
                                                     <TextField
                                                         variant="outlined"
                                                         label='Post Code'
-                                                        name="mobileNo"
+                                                        name="postCode"
                                                         fullWidth
                                                         className={classes.textField}
+                                                        onChange={(e) => handleAddressChange(e, index)}
                                                     />
                                                 </Box>
                                             </Grid>
@@ -165,9 +217,10 @@ function AddCustomerDialog({ open, onClose }) {
                                                     <TextField
                                                         variant="outlined"
                                                         label='City'
-                                                        name="mobileNo"
+                                                        name="city"
                                                         fullWidth
                                                         className={classes.textField}
+                                                        onChange={(e) => handleAddressChange(e, index)}
                                                     />
                                                 </Box>
                                             </Grid>
@@ -177,9 +230,10 @@ function AddCustomerDialog({ open, onClose }) {
                                                     <TextField
                                                         variant="outlined"
                                                         label='State'
-                                                        name="mobileNo"
+                                                        name="state"
                                                         fullWidth
                                                         className={classes.textField}
+                                                        onChange={(e) => handleAddressChange(e, index)}
                                                     />
                                                 </Box>
                                             </Grid>
