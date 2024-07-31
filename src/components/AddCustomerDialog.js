@@ -113,6 +113,10 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
         }
     }
 
+    function panInputHandler(){
+        
+    }
+
     useEffect(() => {
         console.log("editable form true");
         if (editCustomerDetails) {
@@ -179,7 +183,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                     value={body?.panNo}
                                     fullWidth
                                     className={classes.textField}
-                                    onChange={inputHandler}
+                                    onChange={panInputHandler}
                                 />
                             </Box>
                         </Grid>
