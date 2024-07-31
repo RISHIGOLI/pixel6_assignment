@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles()
-  const [showEntryMessageDialog, setShowEntryMessageDialog] = useState(false)
+  const [showEntryMessageDialog, setShowEntryMessageDialog] = useState(true)
   useEffect(() => {
     // setShowEntryMessageDialog(true)
   }, [])
