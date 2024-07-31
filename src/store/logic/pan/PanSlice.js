@@ -26,10 +26,10 @@ const PanSlice = createSlice({
                 console.log('payload for fulfilled state',action.payload);
                 return {
                     ...state,
-                    status: action.payload.status,
+                    status: action.payload.status === 'Failed' ? 'Failed' : action.payload.status,
                     statusCode: action.payload.statusCode,
                     isValid: action.payload.isValid,
-                    fullName: action.payload.fullName
+                    fullName: action.payload.status === 'Failed' ? '' : action.payload.fullName
                 }
             })
             .addCase(verifyPan.rejected, (state,action)=>{
@@ -44,7 +44,7 @@ const PanSlice = createSlice({
     }
 })
 
-export const { } = PanSlice.actions
+export const {} = PanSlice.actions
 export default PanSlice.reducer
 
 export const verifyPan = createAsyncThunk(

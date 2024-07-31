@@ -154,9 +154,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
             ...body,
             [e.target.name]: e.target.value
         })
-        if (status === 'Success' && fullName.length > 1) {
-            setBody((body) => ({ ...body, customerName: fullName }))
-        }
+        
     }
 
     useEffect(() => {
@@ -167,8 +165,17 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
     }, [])
 
     useEffect(() => {
-        console.log('body', body.addresses);
+        console.log('body', body);
     }, [body])
+
+    useEffect(()=>{
+        console.log('full name assignment block');
+        if (status === 'Success' && fullName.length > 1) {
+            setBody((body) => ({ ...body, customerName: fullName }))
+        }else{
+            setBody((body) => ({...body, customerName: ''}))
+        }
+    },[fullName])
 
     return (
         <>
@@ -190,7 +197,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                     variant="outlined"
                                     label='Full Name'
                                     name="customerName"
-                                    value={body?.customerName || fullName}
+                                    value={body?.customerName}
                                     fullWidth
                                     className={classes.textField}
                                     onChange={inputHandler}
@@ -228,7 +235,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                         endAdornment: (
                                             <IconButton
                                                 className={classes.clearButton}
-                                                onClick={() => setBody({ ...body, placeName: '' })}
+                                                onClick={() => setBody({ ...body, panNumber: '' })}
                                             >
                                                 {
                                                     status === 'Pending' ? <Pixel6CircularProgress /> : status === 'Success' ? <CheckIcon style={{ fontSize: '30px', color: 'green', fontWeight: 'bold' }} /> : status === 'Failed' ? <ErrorIcon className={classes.ErrorIcon} /> : ''

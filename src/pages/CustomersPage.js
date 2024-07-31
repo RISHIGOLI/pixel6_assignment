@@ -83,7 +83,7 @@ function CustomersPage() {
                                                 <Box style={{ width: '20%' }} className={classes.column}>{customer.customerName}</Box>
                                                 <Box style={{ width: '20%' }} className={classes.column}>{customer.customerEmail}</Box>
                                                 <Box style={{ width: '15%' }} className={classes.column}>{customer.mobileNo}</Box>
-                                                <Box style={{ width: '15%' }} className={classes.column}>{customer.panNo}</Box>
+                                                <Box style={{ width: '15%' }} className={classes.column}>{customer.panNumber}</Box>
 
                                                 <Box style={{ width: '30%', height: '100%', flexDirection: 'column' }} className={classes.column}>
                                                     {
