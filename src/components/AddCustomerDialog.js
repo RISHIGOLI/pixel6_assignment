@@ -2,8 +2,8 @@ import { Grid, Box, Dialog, TextField, IconButton, Button, Divider } from '@mui/
 import { makeStyles } from '@mui/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { useState, useEffect } from 'react'
-import { useDispatch,useSelector } from 'react-redux'
-import { addCustomer } from '../store/logic/customers/CustomerSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { addCustomer, editCustomer } from '../store/logic/customers/CustomerSlice'
 
 const useStyles = makeStyles((theme) => ({
     dialog: {
@@ -33,10 +33,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-function AddCustomerDialog({ open, onClose }) {
+function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }) {
     const classes = useStyles()
     const dispatch = useDispatch()
-    const [addresses, setAddresses] = useState([1])
+    const { customers } = useSelector((state) => state.customers)
     const [body, setBody] = useState(
         {
             customerName: '',
@@ -55,15 +55,20 @@ function AddCustomerDialog({ open, onClose }) {
         }
     )
 
-    useEffect(() => {
-        console.log(addresses);
-    }, [addresses])
-
-    function deleteAddressHandler(address) {
-        if (addresses.length > 1) {
-            const newAddresses = addresses.filter((addresss) => addresss !== address)
-            setAddresses(newAddresses)
-        }
+    function addMoreAddressesHandler() {
+        setBody({
+            ...body,
+            addresses: [
+                ...body.addresses,
+                {
+                    addressLine1: '',
+                    addressLine2: '',
+                    postCode: '',
+                    city: '',
+                    state: ''
+                }
+            ]
+        })
     }
 
     function inputHandler(e) {
@@ -90,12 +95,34 @@ function AddCustomerDialog({ open, onClose }) {
         })
     }
 
-    useEffect(() => {
-        console.log('body', body);
-    }, [body])
+    function deleteAddressHandler(addressIndex){
+        const updatedAddresses = body.addresses.filter((address,index)=> index !== addressIndex)
+        setBody({
+            ...body,
+            addresses: updatedAddresses
+        })
+    }
 
-    const {customers} = useSelector((state)=>state.customers)
-    console.log('customers from store = ',customers);
+    function addCustomerHandler(){
+        if(editCustomerDetails){
+            dispatch(editCustomer({customerIndex,customer:body}))
+        }else{
+            dispatch(addCustomer(body))
+        }
+    }
+
+    useEffect(() => {
+        console.log("editable form true");
+        if (editCustomerDetails) {
+            setBody(customers[customerIndex])
+        }
+    }, [])
+
+    useEffect(()=>{
+        console.log('body',body.addresses);
+    },[body])
+
+
 
     return (
         <>
@@ -117,6 +144,7 @@ function AddCustomerDialog({ open, onClose }) {
                                     variant="outlined"
                                     label='Full Name'
                                     name="customerName"
+                                    value={body?.customerName}
                                     fullWidth
                                     className={classes.textField}
                                     onChange={inputHandler}
@@ -131,6 +159,7 @@ function AddCustomerDialog({ open, onClose }) {
                                     variant="outlined"
                                     label='Email'
                                     name="customerEmail"
+                                    value={body?.customerEmail}
                                     fullWidth
                                     className={classes.textField}
                                     onChange={inputHandler}
@@ -145,6 +174,7 @@ function AddCustomerDialog({ open, onClose }) {
                                     variant="outlined"
                                     label='PAN No'
                                     name="panNo"
+                                    value={body?.panNo}
                                     fullWidth
                                     className={classes.textField}
                                     onChange={inputHandler}
@@ -159,6 +189,7 @@ function AddCustomerDialog({ open, onClose }) {
                                     variant="outlined"
                                     label='Mobile No'
                                     name="mobileNo"
+                                    value={body?.mobileNo}
                                     fullWidth
                                     className={classes.textField}
                                     onChange={inputHandler}
@@ -173,11 +204,11 @@ function AddCustomerDialog({ open, onClose }) {
                                     <Box style={{ margin: '5px', fontWeight: 'bold' }}>Addresses</Box>
                                 </Grid>
                                 {
-                                    addresses.map((address, index) => (
+                                    body?.addresses.map((address, index) => (
                                         <Grid container spacing={0} border="1px solid lightgray" key={index}>
                                             <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <Box style={{ margin: '5px' }}>Address {address}</Box>
-                                                <Button className={classes.activeButton} onClick={() => deleteAddressHandler(address)}>Delete</Button>
+                                                <Box style={{ margin: '5px' }}>Address {index + 1}</Box>
+                                                <Button className={classes.activeButton} onClick={() => deleteAddressHandler(index)}>Delete</Button>
                                             </Grid>
                                             <Grid item xs={12}>
                                                 <Box style={{ margin: '5px' }}>
@@ -185,6 +216,7 @@ function AddCustomerDialog({ open, onClose }) {
                                                         variant="outlined"
                                                         label='Address Line 1'
                                                         name="addressLine1"
+                                                        value={address?.addressLine1}
                                                         fullWidth
                                                         className={classes.textField}
                                                         onChange={(e) => handleAddressChange(e, index)}
@@ -197,6 +229,7 @@ function AddCustomerDialog({ open, onClose }) {
                                                         variant="outlined"
                                                         label='Address Line 2'
                                                         name="addressLine2"
+                                                        value={address?.addressLine2}
                                                         fullWidth
                                                         className={classes.textField}
                                                         onChange={(e) => handleAddressChange(e, index)}
@@ -210,6 +243,7 @@ function AddCustomerDialog({ open, onClose }) {
                                                         variant="outlined"
                                                         label='Post Code'
                                                         name="postCode"
+                                                        value={address?.postCode}
                                                         fullWidth
                                                         className={classes.textField}
                                                         onChange={(e) => handleAddressChange(e, index)}
@@ -223,6 +257,7 @@ function AddCustomerDialog({ open, onClose }) {
                                                         variant="outlined"
                                                         label='City'
                                                         name="city"
+                                                        value={address?.city}
                                                         fullWidth
                                                         className={classes.textField}
                                                         onChange={(e) => handleAddressChange(e, index)}
@@ -236,6 +271,7 @@ function AddCustomerDialog({ open, onClose }) {
                                                         variant="outlined"
                                                         label='State'
                                                         name="state"
+                                                        value={address?.state}
                                                         fullWidth
                                                         className={classes.textField}
                                                         onChange={(e) => handleAddressChange(e, index)}
@@ -246,11 +282,11 @@ function AddCustomerDialog({ open, onClose }) {
                                     ))
                                 }
                                 <Grid item xs={12} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                                    <Button className={classes.activeButton} onClick={() => setAddresses((addresses) => ([...addresses, addresses[addresses.length - 1] + 1]))}>Add More</Button>
+                                    <Button className={classes.activeButton} onClick={() => addMoreAddressesHandler()}>Add More</Button>
                                 </Grid>
                                 <Grid item xs={12}><Divider /></Grid>
                                 <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Button className={classes.activeButton} onClick={() => dispatch(addCustomer(body))}>Add Customer</Button>
+                                    <Button className={classes.activeButton} onClick={() => addCustomerHandler()}>Add Customer</Button>
                                 </Grid>
                             </Grid>
                         </Grid>

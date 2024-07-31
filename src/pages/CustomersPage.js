@@ -43,8 +43,18 @@ function CustomersPage() {
     const classes = useStyles()
     const { customers } = useSelector((state) => state.customers)
     const dispatch = useDispatch()
-
+    const [editCustomer, setEditCustomer] = useState(false)
+    const [customerIndex, setCustomerIndex] = useState(null)
     const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(false)
+
+    function editCustomerHandler(customerIndex) {
+        setCustomerIndex(customerIndex)
+        setEditCustomer(true)
+        setOpenAddCustomerDialog(true)
+    }
+
+    console.log('customers from store = ',customers);
+
     return (
         <>
             <Grid className={classes.customersPageContainer}>
@@ -69,7 +79,7 @@ function CustomersPage() {
                                     {
                                         customers.map((customer, index) => (
                                             <Grid style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0px', borderBottom: '1px solid lightgrey', minHeight: '4rem', overflow: 'hidden' }} key={index}>
-                                                <Box style={{ width: '5%' }} className={classes.column}>{index}</Box>
+                                                <Box style={{ width: '5%' }} className={classes.column}>{index+1}</Box>
                                                 <Box style={{ width: '20%' }} className={classes.column}>{customer.customerName}</Box>
                                                 <Box style={{ width: '20%' }} className={classes.column}>{customer.customerEmail}</Box>
                                                 <Box style={{ width: '15%' }} className={classes.column}>{customer.mobileNo}</Box>
@@ -90,8 +100,8 @@ function CustomersPage() {
                                                 </Box>
 
                                                 <Box style={{ width: '15%', border: 'none' }} className={classes.column}>
-                                                    <Button className={classes.activeButton}>Edit</Button>
-                                                    <Button className={classes.activeButton} onClick={()=>dispatch(deleteCustomer(index))}>Delete</Button>
+                                                    <Button className={classes.activeButton} onClick={() => editCustomerHandler(index)}>Edit</Button>
+                                                    <Button className={classes.activeButton} onClick={() => dispatch(deleteCustomer(index))}>Delete</Button>
                                                 </Box>
                                             </Grid>
                                         ))
@@ -105,7 +115,7 @@ function CustomersPage() {
 
                 </Grid>
                 {
-                    openAddCustomerDialog && <AddCustomerDialog open={openAddCustomerDialog} onClose={() => setOpenAddCustomerDialog(false)} />
+                    openAddCustomerDialog && <AddCustomerDialog open={openAddCustomerDialog} onClose={() => setOpenAddCustomerDialog(false)} editCustomerDetails={editCustomer} customerIndex={customerIndex} />
                 }
             </Grid>
         </>
