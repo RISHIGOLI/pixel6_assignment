@@ -1,4 +1,4 @@
-import { Grid, Box, Dialog, TextField, IconButton, Button } from '@mui/material'
+import { Grid, Box, Dialog, TextField, IconButton, Button, Divider } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import { useState } from 'react'
@@ -16,15 +16,9 @@ const useStyles = makeStyles((theme) => ({
             /* Add your custom styles for paperWidthSm here */
             maxWidth: '100vw', // Example custom style
             maxHeight: '90vh',
-            height: '90vh'
+            height: '90vh',
+            overflow: 'hidden'
         },
-    },
-    mainContainer: {
-        height: 'fit-content',
-        width: '50vw',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start'
     },
     activeButton: {
         backgroundColor: 'gray !important',
@@ -59,17 +53,13 @@ function AddCustomerDialog({ open, onClose }) {
                 open={open}
                 className={classes.dialog}
             >
-                <Grid className={classes.mainContainer}>
-                    <Grid container spacing={0}>
-
-                        {/* title container */}
-                        <Grid item xs={12} style={{ position: 'sticky', top: 0, zIndex: 1200, backgroundColor: 'white', borderBottom: '1px solid lightgray', height: '3rem' }}>
-                            <Grid style={{ height: '2rem', margin: '5px 0px 5px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Box style={{ fontSize: '20px', fontWeight: 'bold' }}>Add Customer</Box>
-                                <Box onClick={onClose}><IconButton><CloseIcon style={{ fontSize: '30px', cursor: 'pointer' }} /></IconButton></Box>
-                            </Grid>
-                        </Grid>
-
+                <Grid style={{ height: '98vh', maxHeight: '100vh', width: '50vw', backgroundColor: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+                    {/* title container */}
+                    <Grid style={{ backgroundColor: 'white', height: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0px 5px', width: '100%', position: 'absolute', top: 0, borderBottom: '1px solid lightgray' }}>
+                        <Box style={{ fontSize: '20px', fontWeight: 'bold' }}>Add Customer</Box>
+                        <Box onClick={onClose}><IconButton><CloseIcon style={{ fontSize: '30px', cursor: 'pointer' }} /></IconButton></Box>
+                    </Grid>
+                    <Grid style={{ height: 'calc(100% - 3rem)', width: '100%', backgroundColor: 'white', overflowY: 'auto', position: 'absolute', top: '3rem' }} container spacing={0}>
                         {/* full name */}
                         <Grid item xs={12}>
                             <Box style={{ margin: '5px' }}>
