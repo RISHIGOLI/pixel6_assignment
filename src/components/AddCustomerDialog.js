@@ -56,19 +56,21 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
     )
 
     function addMoreAddressesHandler() {
-        setBody({
-            ...body,
-            addresses: [
-                ...body.addresses,
-                {
-                    addressLine1: '',
-                    addressLine2: '',
-                    postCode: '',
-                    city: '',
-                    state: ''
-                }
-            ]
-        })
+        if (body.addresses.length < 10) {
+            setBody({
+                ...body,
+                addresses: [
+                    ...body.addresses,
+                    {
+                        addressLine1: '',
+                        addressLine2: '',
+                        postCode: '',
+                        city: '',
+                        state: ''
+                    }
+                ]
+            })
+        }
     }
 
     function inputHandler(e) {
@@ -95,18 +97,18 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
         })
     }
 
-    function deleteAddressHandler(addressIndex){
-        const updatedAddresses = body.addresses.filter((address,index)=> index !== addressIndex)
+    function deleteAddressHandler(addressIndex) {
+        const updatedAddresses = body.addresses.filter((address, index) => index !== addressIndex)
         setBody({
             ...body,
             addresses: updatedAddresses
         })
     }
 
-    function addCustomerHandler(){
-        if(editCustomerDetails){
-            dispatch(editCustomer({customerIndex,customer:body}))
-        }else{
+    function addCustomerHandler() {
+        if (editCustomerDetails) {
+            dispatch(editCustomer({ customerIndex, customer: body }))
+        } else {
             dispatch(addCustomer(body))
         }
     }
@@ -118,9 +120,9 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
         }
     }, [])
 
-    useEffect(()=>{
-        console.log('body',body.addresses);
-    },[body])
+    useEffect(() => {
+        console.log('body', body.addresses);
+    }, [body])
 
 
 
@@ -286,7 +288,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                 </Grid>
                                 <Grid item xs={12}><Divider /></Grid>
                                 <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Button className={classes.activeButton} onClick={() => addCustomerHandler()}>Add Customer</Button>
+                                    <Button className={classes.activeButton} onClick={() => addCustomerHandler()}>{editCustomerDetails ? 'Save Changes' : 'Add Customer'}</Button>
                                 </Grid>
                             </Grid>
                         </Grid>
