@@ -6,7 +6,8 @@ const initialState = {
     statusCode: 0,
     postCode: 0,
     city: [],
-    state: []
+    state: [],
+    message: ''
 }
 
 const PostCodeSlice = createSlice({
@@ -16,12 +17,29 @@ const PostCodeSlice = createSlice({
         builder
             .addCase(getPostCodeDetails.pending, (state, action) => {
                 console.log('payload for pending state',action.payload);
+                return {
+                    ...state,
+                    status: 'pending'
+                }
             })
             .addCase(getPostCodeDetails.fulfilled, (state, action) => {
                 console.log('payload for fulfilled state',action.payload);
+                return {
+                    ...state,
+                    status: action.payload.status,
+                    statusCode: action.payload.statusCode,
+                    postCode: action.payload.postCode,
+                    city: action.payload.city,
+                    state: action.payload.state
+                }
             })
             .addCase(getPostCodeDetails.rejected, (state, action) => {
                 console.log('payload for rejected state',action.payload);
+                return {
+                    ...state,
+                    status: action.payload.status,
+                    message: action.payload.message
+                }
             })
     }
 })
