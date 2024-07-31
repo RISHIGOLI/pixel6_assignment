@@ -53,7 +53,7 @@ function CustomersPage() {
         setOpenAddCustomerDialog(true)
     }
 
-    console.log('customers from store = ',customers);
+    console.log('customers from store = ', customers);
 
     return (
         <>
@@ -79,21 +79,21 @@ function CustomersPage() {
                                     {
                                         customers.map((customer, index) => (
                                             <Grid style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0px', borderBottom: '1px solid lightgrey', minHeight: '4rem', overflow: 'hidden' }} key={index}>
-                                                <Box style={{ width: '5%' }} className={classes.column}>{index+1}</Box>
+                                                <Box style={{ width: '5%' }} className={classes.column}>{index + 1}</Box>
                                                 <Box style={{ width: '20%' }} className={classes.column}>{customer.customerName}</Box>
                                                 <Box style={{ width: '20%' }} className={classes.column}>{customer.customerEmail}</Box>
                                                 <Box style={{ width: '15%' }} className={classes.column}>{customer.mobileNo}</Box>
                                                 <Box style={{ width: '15%' }} className={classes.column}>{customer.panNumber}</Box>
 
-                                                <Box style={{ width: '30%', height: '100%', flexDirection: 'column' }} className={classes.column}>
+                                                <Box style={{ width: '30%', maxHeight: '10rem', flexDirection: 'column', overflowY: 'auto', justifyContent: 'flex-start' }} className={classes.column}>
                                                     {
                                                         customer.addresses.map((address, index) => (
-                                                            <Grid style={{ height: '100%', width: '100%', backgroundColor: 'lightgray', margin: '0px 5px', display: 'flex', flexDirection: 'column' }}>
-                                                                <Box>{`Address Line1 : ${address.addressLine1}`}</Box>
-                                                                <Box>{`Address Line2 : ${address.addressLine2}`}</Box>
-                                                                <Box>{`Post Code : ${address.postCode}`}</Box>
-                                                                <Box>{`City : ${address.city}`}</Box>
-                                                                <Box>{`State : ${address.state}`}</Box>
+                                                            <Grid style={{ height: '100%', backgroundColor: index%2 == 0 ? 'lightgray' : 'whitesmoke', margin: '5px', display: 'flex', flexDirection: 'column', border: '1px solid black', padding: '5px', borderRadius: '5px' }}>
+                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>Address Line 1 : </Box> <Box style={{marginLeft: '5px'}}>{address.addressLine1}</Box></Grid>
+                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>Address Line 2 : </Box> <Box style={{marginLeft: '5px'}}>{address.addressLine2}</Box></Grid>
+                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>Post Code : </Box> <Box style={{marginLeft: '5px'}}>{address.postCode}</Box></Grid>
+                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>City : </Box> <Box style={{marginLeft: '5px'}}>{address.city}</Box></Grid>
+                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>State : </Box> <Box style={{marginLeft: '5px'}}>{address.state}</Box></Grid>
                                                             </Grid>
                                                         ))
                                                     }
