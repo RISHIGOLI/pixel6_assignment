@@ -2,7 +2,8 @@ import { Grid, Box, Button, Divider } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useState } from 'react'
 import AddCustomerDialog from '../components/AddCustomerDialog'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { deleteCustomer } from '../store/logic/customers/CustomerSlice'
 
 const useStyles = makeStyles((theme) => ({
     customersPageContainer: {
@@ -41,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
 function CustomersPage() {
     const classes = useStyles()
     const { customers } = useSelector((state) => state.customers)
+    const dispatch = useDispatch()
 
     const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(false)
     return (
@@ -89,7 +91,7 @@ function CustomersPage() {
 
                                                 <Box style={{ width: '15%', border: 'none' }} className={classes.column}>
                                                     <Button className={classes.activeButton}>Edit</Button>
-                                                    <Button className={classes.activeButton}>Delete</Button>
+                                                    <Button className={classes.activeButton} onClick={()=>dispatch(deleteCustomer(index))}>Delete</Button>
                                                 </Box>
                                             </Grid>
                                         ))

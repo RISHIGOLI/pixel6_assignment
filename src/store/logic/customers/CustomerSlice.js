@@ -16,9 +16,15 @@ const CustomerSlice = createSlice({
                 ...state,
                 customers: [...state.customers, action.payload]
             }
+        },
+        deleteCustomer: (state,action) => {
+            return {
+                ...state,
+                customers: state.customers.filter((customer,index)=> index !== action.payload)
+            }
         }
     }
 })
 
-export const {addCustomer} = CustomerSlice.actions
+export const {addCustomer,deleteCustomer} = CustomerSlice.actions
 export default CustomerSlice.reducer
