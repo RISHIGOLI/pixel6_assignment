@@ -59,7 +59,7 @@ function CustomersPage() {
                                     <Box style={{ width: '15%' }} className={classes.column}>Mobile No</Box>
                                     <Box style={{ width: '15%' }} className={classes.column}>PAN No</Box>
                                     <Box style={{ width: '30%' }} className={classes.column}>Address</Box>
-                                    <Box style={{ width: '20%', border: 'none' }} className={classes.column}>Actions</Box>
+                                    <Box style={{ width: '15%', border: 'none' }} className={classes.column}>Actions</Box>
                                 </Grid>
                                 <Grid style={{ height: '100%', width: '100%', overflowY: 'auto', border: '1px solid gray' }}>
                                     {
@@ -79,7 +79,10 @@ function CustomersPage() {
                                                         <Box>State : Maharashtra</Box>
                                                     </Grid>
                                                 </Box>
-                                                <Box style={{ width: '20%', border: 'none' }} className={classes.column}>Actions</Box>
+                                                <Box style={{ width: '15%', border: 'none' }} className={classes.column}>
+                                                    <Button className={classes.activeButton}>Edit</Button>
+                                                    <Button className={classes.activeButton}>Delete</Button>
+                                                </Box>
                                             </Grid>
                                         ))
                                     }
