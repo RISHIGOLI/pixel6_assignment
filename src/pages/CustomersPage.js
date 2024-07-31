@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 function CustomersPage() {
     const classes = useStyles()
     const [customers, setCustomers] = useState(Array(20).fill(1))
-    const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(true)
+    const [openAddCustomerDialog, setOpenAddCustomerDialog] = useState(false)
     return (
         <>
             <Grid className={classes.customersPageContainer}>
@@ -58,18 +58,28 @@ function CustomersPage() {
                                     <Box style={{ width: '20%' }} className={classes.column}>Email</Box>
                                     <Box style={{ width: '15%' }} className={classes.column}>Mobile No</Box>
                                     <Box style={{ width: '15%' }} className={classes.column}>PAN No</Box>
-                                    <Box style={{ width: '30%', border: 'none' }} className={classes.column}>Address</Box>
+                                    <Box style={{ width: '30%' }} className={classes.column}>Address</Box>
+                                    <Box style={{ width: '20%', border: 'none' }} className={classes.column}>Actions</Box>
                                 </Grid>
                                 <Grid style={{ height: '100%', width: '100%', overflowY: 'auto', border: '1px solid gray' }}>
                                     {
                                         customers.map((item, index) => (
-                                            <Grid style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0px', borderBottom: '1px solid lightgrey', height: '4rem', overflow: 'hidden' }} key={index}>
+                                            <Grid style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0px', borderBottom: '1px solid lightgrey', minHeight: '4rem', overflow: 'hidden' }} key={index}>
                                                 <Box style={{ width: '5%' }} className={classes.column}>Sr No</Box>
                                                 <Box style={{ width: '20%' }} className={classes.column}>Customer Name</Box>
                                                 <Box style={{ width: '20%' }} className={classes.column}>Email</Box>
                                                 <Box style={{ width: '15%' }} className={classes.column}>Mobile No</Box>
                                                 <Box style={{ width: '15%' }} className={classes.column}>PAN No</Box>
-                                                <Box style={{ width: '30%', border: 'none' }} className={classes.column}>Address</Box>
+                                                <Box style={{ width: '30%', height: '100%'}} className={classes.column}>
+                                                    <Grid style={{ height: '100%', width: '100%', backgroundColor: 'lightgray', margin: '0px 5px', display: 'flex', flexDirection: 'column' }}>
+                                                        <Box>Address Line 1: asfd afasdf asdfasdf</Box>
+                                                        <Box>Address Line 2: asdfa asdfsdfas asdf</Box>
+                                                        <Box>PostCode: 413005</Box>
+                                                        <Box>City : Solapur</Box>
+                                                        <Box>State : Maharashtra</Box>
+                                                    </Grid>
+                                                </Box>
+                                                <Box style={{ width: '20%', border: 'none' }} className={classes.column}>Actions</Box>
                                             </Grid>
                                         ))
                                     }
