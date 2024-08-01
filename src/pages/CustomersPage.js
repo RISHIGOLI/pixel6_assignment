@@ -115,7 +115,7 @@ function CustomersPage() {
 
                 </Grid>
                 {
-                    openAddCustomerDialog && <AddCustomerDialog open={openAddCustomerDialog} onClose={() => {setOpenAddCustomerDialog(false);setCustomerIndex(null);setEditCustomer(false)}} editCustomerDetails={editCustomer} customerIndex={customerIndex} />
+                    openAddCustomerDialog && <AddCustomerDialog open={openAddCustomerDialog} onClose={() => {setCustomerIndex(null);setEditCustomer(false);setOpenAddCustomerDialog(false)}} editCustomerDetails={editCustomer} customerIndex={customerIndex} />
                 }
             </Grid>
         </>

@@ -62,6 +62,16 @@ const useStyles = makeStyles((theme) => ({
                 borderWidth: '1px'
             }
         },
+    },
+    errorMessage: {
+        fontSize: '0.75rem',
+        fontWeight: '400',
+        lineHeight: '1.43em',
+        letterSpacing: '0.0250em',
+        color: '#d32f2f'
+    },
+    errorIcon: {
+        color: '#d32f2f'
     }
 }))
 
@@ -191,8 +201,10 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
 
     useEffect(() => {
         console.log('full name assignment block');
-        if (status === 'Success' && fullName.length > 1) {
+        if (status === 'Success' && fullName.length > 1 ) {
             setBody((body) => ({ ...body, customerName: fullName }))
+        } else {
+            setBody((body) => ({ ...body, customerName: body.customerName }))
         }
     }, [fullName])
 
@@ -342,6 +354,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                             <Grid item xs={12} md={4}>
                                                 <Box style={{ margin: '5px' }}>
                                                     <TextField
+                                                        error={postCodeStatus === 'Failed'}
                                                         variant="outlined"
                                                         label='Post Code'
                                                         name="postCode"
@@ -356,7 +369,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                                                 // onClick={() => setBody({ ...body, panNumber: '' })}
                                                                 >
                                                                     {
-                                                                        postCodeStatus === 'Pending' ? <Pixel6CircularProgress /> : postCodeStatus === 'Success' ? <CheckIcon style={{ fontSize: '30px', color: 'green', fontWeight: 'bold' }} /> : postCodeStatus === 'Failed' ? <ErrorIcon className={classes.ErrorIcon} /> : ''
+                                                                        postCodeStatus === 'Pending' ? <Pixel6CircularProgress /> : postCodeStatus === 'Success' ? <CheckIcon style={{ fontSize: '30px', color: 'green', fontWeight: 'bold' }} /> : postCodeStatus === 'Failed' ? <ErrorIcon className={classes.errorIcon} /> : ''
                                                                     }
 
                                                                 </IconButton>
