@@ -1,10 +1,11 @@
 import {createSlice} from '@reduxjs/toolkit'
 
 const initialState = {
+    status: '',
     loader: false,
     error: false,
     message: '',
-    customers: []
+    customers: [],
 }
 
 const CustomerSlice = createSlice({
@@ -14,7 +15,8 @@ const CustomerSlice = createSlice({
         addCustomer: (state,action) => {
             return {
                 ...state,
-                customers: [...state.customers, action.payload]
+                customers: [...state.customers, action.payload],
+                status: 'Success'
             }
         },
         deleteCustomer: (state,action) => {
@@ -29,11 +31,18 @@ const CustomerSlice = createSlice({
             const updatedCusomers = state.customers.map((customer,index)=> index !== customerIndex ? customer : newCustomer)
             return {
                 ...state,
-                customers: updatedCusomers
+                customers: updatedCusomers,
+                status:'Success'
+            }
+        },
+        resetCustomer: (state,action) => {
+            return {
+                ...state,
+                status: ''
             }
         }
     }
 })
 
-export const {addCustomer,deleteCustomer,editCustomer} = CustomerSlice.actions
+export const {addCustomer,deleteCustomer,editCustomer,resetCustomer} = CustomerSlice.actions
 export default CustomerSlice.reducer
