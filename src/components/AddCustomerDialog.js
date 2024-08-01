@@ -82,6 +82,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
     const { status, statusCode, message, fullName, panNumber } = useSelector((state) => state.panData)
     const { status: postCodeStatus, statusCode: postCodeStatusCode, city, state, message: postCodeMessage } = useSelector((state) => state.postCodeData)
     const [selectedAddressIndex, setSelectedAddressIndex] = useState(null)
+    const [selectedPostCodeIndex, setSelectedPostCodeIndex] = useState(null)
     const [body, setBody] = useState(
         {
             customerName: '',
@@ -212,6 +213,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
 
     function handlePostCodeChange(e, index) {
         setSelectedAddressIndex(index)
+        setSelectedPostCodeIndex(index)
         dispatch(getPostCodeDetails({ postcode: e.target.value }))
         setBody((body) => {
             const updatedAddresses = [...body.addresses]
@@ -260,6 +262,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
     }
 
     useEffect(() => {
+
         if (editCustomerDetails === true && customerIndex !== null) {
             console.log("editable form true");
             setBody(customers[customerIndex])
@@ -297,10 +300,6 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
         })
     }, [city, state, postCodeStatus])
 
-    useEffect(() => {
-        console.log(errorBody);
-    }, [errorBody])
-
     function handleFocus(e, index) {
         console.log(`${e.target.name}_${index}`);
         const updatedErrorBody = { ...errorBody }
@@ -312,6 +311,50 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
         setErrorBody(updatedErrorBody)
     }
 
+    function resetData() {
+        if (editCustomerDetails && customerIndex !== null) {
+            setBody(customers[customerIndex])
+        } else {
+            setBody(
+                {
+                    customerName: '',
+                    customerEmail: '',
+                    panNumber: '',
+                    mobileNo: '',
+                    addresses: [
+                        {
+                            addressLine1: '',
+                            addressLine2: '',
+                            postCode: '',
+                            city: '',
+                            state: ''
+                        }
+                    ]
+                }
+            )
+        }
+        setErrorBody({})
+    }
+
+    function handleClearAddressLines(fieldName,index){
+        
+        setBody((body) => {
+            const updatedAddresses = [...body.addresses]
+            updatedAddresses[index] = {
+                ...updatedAddresses[index],
+                [fieldName]: ''
+            }
+            return {
+                ...body,
+                addresses: updatedAddresses
+            }
+
+        })
+    }
+
+    useEffect(()=>{
+        console.log(body.addresses);
+    },[body])
     return (
         <>
             <Dialog
@@ -324,7 +367,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                         <Box style={{ fontSize: '20px', fontWeight: 'bold' }}>Add Customer</Box>
                         <Box onClick={onClose}><IconButton><CloseIcon style={{ fontSize: '30px', cursor: 'pointer' }} /></IconButton></Box>
                     </Grid>
-                    <Grid style={{ height: 'calc(100% - 3rem)', width: '100%', backgroundColor: 'white', overflowY: 'auto', position: 'absolute', top: '3rem' }} container spacing={0}>
+                    <Grid style={{ height: 'calc(100% - 6rem)', width: '100%', backgroundColor: 'white', overflowY: 'auto', position: 'absolute', top: '3rem' }} container spacing={0}>
                         {/* full name */}
                         <Grid item xs={12}>
                             <Box style={{ margin: '5px' }}>
@@ -384,32 +427,41 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                         </Grid>
 
                         {/* pan */}
-                        <Grid item xs={6}>
-                            <Box style={{ margin: '5px' }}>
-                                <TextField
-                                    error={errorBody.panNumber}
-                                    variant="outlined"
-                                    label='PAN No'
-                                    name="panNumber"
-                                    value={body?.panNumber}
-                                    fullWidth
-                                    className={classes.textField}
-                                    onChange={panInputHandler}
-                                    InputProps={{
-                                        endAdornment: (
-                                            <IconButton
-                                                className={classes.clearButton}
-                                                onClick={() => setBody({ ...body, panNumber: '' })}
-                                            >
-                                                {body.panNumber && !errorBody.panNumber && <CancelIcon />}
-                                                {errorBody.panNumber && <ErrorIcon className={classes.errorIcon} />}
-                                            </IconButton>
-                                        ),
-                                    }}
-                                    onFocus={(e) => handleFocus(e)}
-                                />
-                                {errorBody.panNumber && <span className={classes.errorMessage}>{errorBody.panNumber}</span>}
-                            </Box>
+                        <Grid container xs={6}>
+                            <Grid item xs={status !== '' ? 10 : 12}>
+                                <Box style={{ margin: '5px' }}>
+                                    <TextField
+                                        error={errorBody.panNumber}
+                                        variant="outlined"
+                                        label='PAN No'
+                                        name="panNumber"
+                                        value={body?.panNumber}
+                                        fullWidth
+                                        className={classes.textField}
+                                        onChange={panInputHandler}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <IconButton
+                                                    className={classes.clearButton}
+                                                    onClick={() => setBody({ ...body, panNumber: '' })}
+                                                >
+                                                    {body.panNumber && !errorBody.panNumber && <CancelIcon />}
+                                                    {errorBody.panNumber && <ErrorIcon className={classes.errorIcon} />}
+                                                </IconButton>
+                                            ),
+                                        }}
+                                        onFocus={(e) => handleFocus(e)}
+                                    />
+                                    {errorBody.panNumber && <span className={classes.errorMessage}>{errorBody.panNumber}</span>}
+                                </Box>
+                            </Grid>
+                            <Grid item xs={status !== '' && 2} display={status === '' ? 'none' : 'flex'}>
+                                <Box style={{ margin: '5px', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '4rem', marginTop: '0px' }}>
+                                    {
+                                        status === 'Pending' ? <Pixel6CircularProgress /> : status === 'Success' ? <CheckIcon style={{ fontSize: '30px', color: 'green', fontWeight: 'bold' }} /> : status === 'Failed' ? <ErrorIcon className={classes.errorIcon} /> : ''
+                                    }
+                                </Box>
+                            </Grid>
                         </Grid>
 
                         {/* mobile no */}
@@ -465,11 +517,11 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                                         fullWidth
                                                         className={classes.textField}
                                                         onChange={(e) => handleAddressChange(e, index)}
-                                                        InputProps={index === selectedAddressIndex && {
+                                                        InputProps={ {
                                                             endAdornment: (
                                                                 <IconButton
                                                                     className={classes.clearButton}
-                                                                    onClick={() => setBody({ ...body, panNumber: '' })}
+                                                                    onClick={() => handleClearAddressLines('addressLine1', index)}
                                                                 >
                                                                     {address.addressLine1 && !errorBody[`addressLine1_${index}`] && <CancelIcon />}
                                                                     {errorBody[`addressLine1_${index}`] && <ErrorIcon className={classes.errorIcon} />}
@@ -491,6 +543,16 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                                         fullWidth
                                                         className={classes.textField}
                                                         onChange={(e) => handleAddressChange(e, index)}
+                                                        InputProps={ {
+                                                            endAdornment: (
+                                                                <IconButton
+                                                                    className={classes.clearButton}
+                                                                    onClick={() => handleClearAddressLines('addressLine2', index)}
+                                                                >
+                                                                    {address.addressLine2 && <CancelIcon />}
+                                                                </IconButton>
+                                                            ),
+                                                        }}
                                                     />
                                                 </Box>
                                             </Grid>
@@ -498,7 +560,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                             <Grid item xs={12} md={4}>
                                                 <Box style={{ margin: '5px' }}>
                                                     <TextField
-                                                        error={!!errorBody[`postCode_${index}`]}
+                                                        error={errorBody[`postCode_${index}`]}
                                                         variant="outlined"
                                                         label='Post Code'
                                                         name="postCode"
@@ -506,14 +568,14 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                                         fullWidth
                                                         className={classes.textField}
                                                         onChange={(e) => handlePostCodeChange(e, index)}
-                                                        InputProps={index === selectedAddressIndex && {
+                                                        InputProps={index === selectedPostCodeIndex && {
                                                             endAdornment: (
                                                                 <IconButton
                                                                     className={classes.clearButton}
                                                                     onClick={() => setBody({ ...body, panNumber: '' })}
                                                                 >
                                                                     {
-                                                                        postCodeStatus === 'Pending' ? <Pixel6CircularProgress /> : postCodeStatus === 'Success' ? <CheckIcon style={{ fontSize: '30px', color: 'green', fontWeight: 'bold' }} /> : postCodeStatus === 'Failed' ? <ErrorIcon className={classes.errorIcon} /> : ''
+                                                                        postCodeStatus === 'Pending' && selectedPostCodeIndex === index ? <Pixel6CircularProgress /> : postCodeStatus === 'Success' && selectedAddressIndex === index ? <CheckIcon style={{ fontSize: '30px', color: 'green', fontWeight: 'bold' }} /> : postCodeStatus === 'Failed' && selectedPostCodeIndex === index ? <ErrorIcon className={classes.errorIcon} /> : ''
                                                                     }
                                                                     {/* {address.postCode && !errorBody[`postCode_${index}`] && <CancelIcon />} */}
                                                                     {errorBody[`postCode_${index}`] && <ErrorIcon className={classes.errorIcon} />}
@@ -559,11 +621,16 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                 <Grid item xs={12} style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                                     <Button className={classes.activeButton} onClick={() => addMoreAddressesHandler()}>Add More</Button>
                                 </Grid>
-                                <Grid item xs={12}><Divider /></Grid>
-                                <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Button className={classes.activeButton} onClick={() => addCustomerHandler()}>{editCustomerDetails ? 'Save Changes' : 'Add Customer'}</Button>
-                                </Grid>
                             </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid style={{ backgroundColor: 'white', height: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0px', width: '100%', position: 'absolute', bottom: 0, borderTop: '1px solid lightgray', zIndex: 1200 }}>
+                        <Grid item xs={3} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <Button className={classes.activeButton} onClick={() => addCustomerHandler()}>{editCustomerDetails ? 'Save Changes' : 'Add Customer'}</Button>
+                        </Grid>
+                        <Grid item xs={6} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <Button className={classes.activeButton} onClick={() => resetData()}>Reset</Button>
+                            <Button className={classes.activeButton} onClick={onClose}>Cancel</Button>
                         </Grid>
                     </Grid>
                 </Grid>

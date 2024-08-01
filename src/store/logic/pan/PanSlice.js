@@ -39,7 +39,7 @@ const PanSlice = createSlice({
                 console.log('payload for fulfilled state', action.payload);
                 return {
                     ...state,
-                    status: action.payload.status === 'Failed' ? 'Failed' : action.payload.status,
+                    status: action.payload.status !== 'Success' ? 'Failed' : 'Success',
                     statusCode: action.payload.statusCode,
                     isValid: action.payload.isValid,
                     fullName: action.payload.status === 'Failed' ? '' : action.payload.fullName
@@ -65,6 +65,7 @@ export const verifyPan = createAsyncThunk(
     async ({ body }, thunkAPI) => {
         try {
             const response = await verifyPanAPI(body)
+            console.log(response);
             return response.data
         } catch (error) {
             return thunkAPI.rejectWithValue(error);
