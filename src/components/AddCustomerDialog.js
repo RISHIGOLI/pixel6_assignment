@@ -275,6 +275,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
         return () => {
             dispatch(resetPostCodeInitialState())
             dispatch(resetPanDataInitialState())
+            dispatch(resetCustomer())
         }
     }, [])
 
@@ -528,6 +529,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                         <Grid>
                                             <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <Box style={{ margin: '5px', fontWeight: 'bold' }}>Addresses</Box>
+                                                <Box style={{ margin: '5px' }}>{`( Max 10 addresses )`}</Box>
                                             </Grid>
                                             {
                                                 body?.addresses.map((address, index) => (
