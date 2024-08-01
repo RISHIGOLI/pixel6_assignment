@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { Grid, Box, Dialog, TextField, IconButton, Button, Divider } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import CloseIcon from '@mui/icons-material/Close'
@@ -7,10 +6,11 @@ import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { addCustomer, editCustomer } from '../store/logic/customers/CustomerSlice'
 import { resetPanDataInitialState, verifyPan } from '../store/logic/pan/PanSlice'
-import { instance } from '../services/axios-config'
 import Pixel6CircularProgress from '../utils/Pixel6CircularProgress'
 import ErrorIcon from '@mui/icons-material/Error';
 import { getPostCodeDetails, resetPostCodeInitialState } from '../store/logic/postcode/PostCodeSlice';
+import CancelIcon from '@mui/icons-material/Cancel';
+import { isValidEmail, isValidMobile, isValidPAN } from '../utils/Validators';
 
 const useStyles = makeStyles((theme) => ({
     dialog: {
@@ -72,14 +72,14 @@ const useStyles = makeStyles((theme) => ({
     },
     errorIcon: {
         color: '#d32f2f'
-    }
+    },
 }))
 
 function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }) {
     const classes = useStyles()
     const dispatch = useDispatch()
     const { customers } = useSelector((state) => state.customers)
-    const { status, statusCode, message, fullName, panNumber, isValid } = useSelector((state) => state.panData)
+    const { status, statusCode, message, fullName, panNumber } = useSelector((state) => state.panData)
     const { status: postCodeStatus, statusCode: postCodeStatusCode, city, state, message: postCodeMessage } = useSelector((state) => state.postCodeData)
     const [selectedAddressIndex, setSelectedAddressIndex] = useState(null)
     const [body, setBody] = useState(
@@ -99,6 +99,74 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
             ]
         }
     )
+    const [errorBody, setErrorBody] = useState({})
+
+    function validateForm() {
+        let errorBody = {}
+        let isValid = true
+
+        if (!body.customerName) {
+            errorBody.customerName = 'customer name is required'
+            isValid = false
+        }
+        if (body.customerName && body.customerName.length < 3 || body.customerName.length > 140) {
+            errorBody.customerName = 'customer name should be between 2 to 140 characters'
+            isValid = false
+        }
+        if (!body.customerEmail) {
+            errorBody.customerEmail = 'customer email is required'
+            isValid = false
+        }
+        if (body.customerEmail && !isValidEmail(body.customerEmail)) {
+            errorBody.customerEmail = 'customer email is invalid'
+            isValid = false
+        }
+        if (body.customerEmail && body.customerEmail.length > 255) {
+            errorBody.customerEmail = 'customer email length should not exceed 255'
+            isValid = false
+        }
+        if (!body.panNumber) {
+            errorBody.panNumber = 'pan number is required'
+            isValid = false
+        }
+        if (body.panNumber && !isValidPAN(body.panNumber)) {
+            errorBody.panNumber = 'pan number is invalid'
+            isValid = false
+        }
+        if (body.panNumber && body.panNumber.length > 10) {
+            errorBody.panNumber = 'pan number length should not exceed 10'
+            isValid = false
+        }
+        if (!body.mobileNo) {
+            errorBody.mobileNo = 'mobile number is required'
+            isValid = false
+        }
+        if (body.mobileNo && body.mobileNo.length > 10) {
+            errorBody.mobileNo = 'mobile number length should not exceed 10'
+            isValid = false
+        }
+        if (body.mobileNo && !isValidMobile(body.mobileNo)) {
+            errorBody.mobileNo = 'mobile number is invalid'
+            isValid = false
+        }
+
+        body.addresses.forEach((address, index) => {
+            if (!address.addressLine1) {
+                errorBody[`addressLine1_${index}`] = 'Address Line 1 is required';
+                isValid = false;
+            }
+            if (!address.postCode) {
+                errorBody[`postCode_${index}`] = 'postcode is required';
+                isValid = false;
+            } else if (!/^\d{6}$/.test(address.postCode)) {
+                errorBody[`postCode_${index}`] = 'postcode must be a 6 digit number';
+                isValid = false;
+            }
+        });
+
+        setErrorBody(errorBody)
+        return isValid
+    }
 
     function addMoreAddressesHandler() {
         if (body.addresses.length < 10) {
@@ -170,10 +238,14 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
     }
 
     function addCustomerHandler() {
-        if (editCustomerDetails) {
-            dispatch(editCustomer({ customerIndex, customer: body }))
-        } else {
-            dispatch(addCustomer(body))
+        let isFormValid = validateForm()
+        if (isFormValid) {
+            console.log('form is valid');
+            if (editCustomerDetails) {
+                dispatch(editCustomer({ customerIndex, customer: body }))
+            } else {
+                dispatch(addCustomer(body))
+            }
         }
     }
 
@@ -201,7 +273,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
 
     useEffect(() => {
         console.log('full name assignment block');
-        if (status === 'Success' && fullName.length > 1 ) {
+        if (status === 'Success' && fullName.length > 1) {
             setBody((body) => ({ ...body, customerName: fullName }))
         } else {
             setBody((body) => ({ ...body, customerName: body.customerName }))
@@ -225,6 +297,21 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
         })
     }, [city, state, postCodeStatus])
 
+    useEffect(() => {
+        console.log(errorBody);
+    }, [errorBody])
+
+    function handleFocus(e, index) {
+        console.log(`${e.target.name}_${index}`);
+        const updatedErrorBody = { ...errorBody }
+        if (index !== undefined && index !== null) {
+            delete updatedErrorBody[`${e.target.name}_${index}`]
+        } else {
+            delete updatedErrorBody[e.target.name]
+        }
+        setErrorBody(updatedErrorBody)
+    }
+
     return (
         <>
             <Dialog
@@ -242,6 +329,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                         <Grid item xs={12}>
                             <Box style={{ margin: '5px' }}>
                                 <TextField
+                                    error={errorBody.customerName}
                                     variant="outlined"
                                     label='Full Name'
                                     name="customerName"
@@ -249,7 +337,20 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                     fullWidth
                                     className={classes.textField}
                                     onChange={inputHandler}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <IconButton
+                                                className={classes.clearButton}
+                                                onClick={() => setBody({ ...body, customerName: '' })}
+                                            >
+                                                {body.customerName && !errorBody.customerName && <CancelIcon />}
+                                                {errorBody.customerName && <ErrorIcon className={classes.errorIcon} />}
+                                            </IconButton>
+                                        ),
+                                    }}
+                                    onFocus={(e) => handleFocus(e)}
                                 />
+                                {errorBody.customerName && <span className={classes.errorMessage}>{errorBody.customerName}</span>}
                             </Box>
                         </Grid>
 
@@ -257,6 +358,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                         <Grid item xs={12}>
                             <Box style={{ margin: '5px' }}>
                                 <TextField
+                                    error={errorBody.customerEmail}
                                     variant="outlined"
                                     label='Email'
                                     name="customerEmail"
@@ -264,7 +366,20 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                     fullWidth
                                     className={classes.textField}
                                     onChange={inputHandler}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <IconButton
+                                                className={classes.clearButton}
+                                                onClick={() => setBody({ ...body, customerEmail: '' })}
+                                            >
+                                                {body.customerEmail && !errorBody.customerEmail && <CancelIcon />}
+                                                {errorBody.customerEmail && <ErrorIcon className={classes.errorIcon} />}
+                                            </IconButton>
+                                        ),
+                                    }}
+                                    onFocus={(e) => handleFocus(e)}
                                 />
+                                {errorBody.customerEmail && <span className={classes.errorMessage}>{errorBody.customerEmail}</span>}
                             </Box>
                         </Grid>
 
@@ -272,6 +387,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                         <Grid item xs={6}>
                             <Box style={{ margin: '5px' }}>
                                 <TextField
+                                    error={errorBody.panNumber}
                                     variant="outlined"
                                     label='PAN No'
                                     name="panNumber"
@@ -285,14 +401,14 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                                 className={classes.clearButton}
                                                 onClick={() => setBody({ ...body, panNumber: '' })}
                                             >
-                                                {
-                                                    status === 'Pending' ? <Pixel6CircularProgress /> : status === 'Success' ? <CheckIcon style={{ fontSize: '30px', color: 'green', fontWeight: 'bold' }} /> : status === 'Failed' ? <ErrorIcon className={classes.ErrorIcon} /> : ''
-                                                }
-
+                                                {body.panNumber && !errorBody.panNumber && <CancelIcon />}
+                                                {errorBody.panNumber && <ErrorIcon className={classes.errorIcon} />}
                                             </IconButton>
                                         ),
                                     }}
+                                    onFocus={(e) => handleFocus(e)}
                                 />
+                                {errorBody.panNumber && <span className={classes.errorMessage}>{errorBody.panNumber}</span>}
                             </Box>
                         </Grid>
 
@@ -300,6 +416,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                         <Grid item xs={6}>
                             <Box style={{ margin: '5px' }}>
                                 <TextField
+                                    error={errorBody.mobileNo}
                                     variant="outlined"
                                     label='Mobile No'
                                     name="mobileNo"
@@ -307,7 +424,20 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                     fullWidth
                                     className={classes.textField}
                                     onChange={inputHandler}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <IconButton
+                                                className={classes.clearButton}
+                                                onClick={() => setBody({ ...body, mobileNo: '' })}
+                                            >
+                                                {body.mobileNo && !errorBody.mobileNo && <CancelIcon />}
+                                                {errorBody.mobileNo && <ErrorIcon className={classes.errorIcon} />}
+                                            </IconButton>
+                                        ),
+                                    }}
+                                    onFocus={(e) => handleFocus(e)}
                                 />
+                                {errorBody.mobileNo && <span className={classes.errorMessage}>{errorBody.mobileNo}</span>}
                             </Box>
                         </Grid>
 
@@ -327,6 +457,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                             <Grid item xs={12}>
                                                 <Box style={{ margin: '5px' }}>
                                                     <TextField
+                                                        error={!!errorBody[`addressLine1_${index}`]}
                                                         variant="outlined"
                                                         label='Address Line 1'
                                                         name="addressLine1"
@@ -334,7 +465,20 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                                         fullWidth
                                                         className={classes.textField}
                                                         onChange={(e) => handleAddressChange(e, index)}
+                                                        InputProps={index === selectedAddressIndex && {
+                                                            endAdornment: (
+                                                                <IconButton
+                                                                    className={classes.clearButton}
+                                                                    onClick={() => setBody({ ...body, panNumber: '' })}
+                                                                >
+                                                                    {address.addressLine1 && !errorBody[`addressLine1_${index}`] && <CancelIcon />}
+                                                                    {errorBody[`addressLine1_${index}`] && <ErrorIcon className={classes.errorIcon} />}
+                                                                </IconButton>
+                                                            ),
+                                                        }}
+                                                        onFocus={(e) => handleFocus(e, index)}
                                                     />
+                                                    {errorBody[`addressLine1_${index}`] && <span className={classes.errorMessage}>{errorBody[`addressLine1_${index}`]}</span>}
                                                 </Box>
                                             </Grid>
                                             <Grid item xs={12}>
@@ -354,7 +498,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                             <Grid item xs={12} md={4}>
                                                 <Box style={{ margin: '5px' }}>
                                                     <TextField
-                                                        error={postCodeStatus === 'Failed'}
+                                                        error={!!errorBody[`postCode_${index}`]}
                                                         variant="outlined"
                                                         label='Post Code'
                                                         name="postCode"
@@ -366,16 +510,19 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                                             endAdornment: (
                                                                 <IconButton
                                                                     className={classes.clearButton}
-                                                                // onClick={() => setBody({ ...body, panNumber: '' })}
+                                                                    onClick={() => setBody({ ...body, panNumber: '' })}
                                                                 >
                                                                     {
                                                                         postCodeStatus === 'Pending' ? <Pixel6CircularProgress /> : postCodeStatus === 'Success' ? <CheckIcon style={{ fontSize: '30px', color: 'green', fontWeight: 'bold' }} /> : postCodeStatus === 'Failed' ? <ErrorIcon className={classes.errorIcon} /> : ''
                                                                     }
-
+                                                                    {/* {address.postCode && !errorBody[`postCode_${index}`] && <CancelIcon />} */}
+                                                                    {errorBody[`postCode_${index}`] && <ErrorIcon className={classes.errorIcon} />}
                                                                 </IconButton>
                                                             ),
                                                         }}
+                                                        onFocus={(e) => handleFocus(e, index)}
                                                     />
+                                                    {errorBody[`postCode_${index}`] && <span className={classes.errorMessage}>{errorBody[`postCode_${index}`]}</span>}
                                                 </Box>
                                             </Grid>
 
