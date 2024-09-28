@@ -14,6 +14,13 @@ import { isValidEmail, isValidMobile, isValidPAN } from '../utils/Validators';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
 const useStyles = makeStyles((theme) => ({
+    mainContainer: {
+        height: '90vh', maxHeight: '100vh', width: '50vw', backgroundColor: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
+        [theme.breakpoints.down(768)]: {
+            height: '100vh',
+            width:'100vw'
+        },
+    },
     dialog: {
         width: '100vw',
         height: '100vh',
@@ -24,8 +31,11 @@ const useStyles = makeStyles((theme) => ({
         '& .MuiDialog-paperWidthSm': {
             /* Add your custom styles for paperWidthSm here */
             maxWidth: '100vw', // Example custom style
-            maxHeight: '90vh',
+            maxHeight: '100vh',
             height: '90vh',
+            [theme.breakpoints.down(768)]: {
+                height: '100vh'
+            },
             overflow: 'hidden'
         },
     },
@@ -389,7 +399,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                 open={open}
                 className={classes.dialog}
             >
-                <Grid style={{ height: '98vh', maxHeight: '100vh', width: '50vw', backgroundColor: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+                <Grid className={classes.mainContainer}>
                     {/* title container */}
                     <Grid style={{ backgroundColor: 'white', height: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0px 5px', width: '100%', position: 'absolute', top: 0, borderBottom: '1px solid lightgray' }}>
                         <Box style={{ fontSize: '20px', fontWeight: 'bold' }}>Add Customer</Box>
@@ -612,7 +622,7 @@ function AddCustomerDialog({ open, onClose, editCustomerDetails, customerIndex }
                                                                         ),
                                                                     }}
                                                                     onFocus={(e) => handleFocus(e, index)}
-                                                                    style={{marginRight: '0px'}}
+                                                                    style={{ marginRight: '0px' }}
                                                                 />
                                                                 {errorBody[`postCode_${index}`] && <span className={classes.errorMessage}>{errorBody[`postCode_${index}`]}</span>}
                                                             </Grid>

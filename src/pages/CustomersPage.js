@@ -6,6 +6,18 @@ import { useSelector, useDispatch } from 'react-redux'
 import { deleteCustomer } from '../store/logic/customers/CustomerSlice'
 
 const useStyles = makeStyles((theme) => ({
+    tableTitleRowContainer: {
+        backgroundColor: 'gray', display: 'flex', alignItems: 'center', padding: '15px 0px', color: 'white', borderTopLeftRadius: '5px', borderTopRightRadius: '5px', position: 'sticky', paddingRight: '4px',
+        [theme.breakpoints.down(768)]: {
+            minWidth: '1000px'
+        }
+    },
+    tableEntryRowContainer: {
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0px', borderBottom: '1px solid lightgrey', minHeight: '4rem',
+        [theme.breakpoints.down(768)]: {
+            minWidth: '1000px'
+        }
+    },
     customersPageContainer: {
         height: '100%',
         display: 'flex',
@@ -62,11 +74,11 @@ function CustomersPage() {
                     <Box style={{ marginLeft: '5px', fontSize: '20px', fontFamily: 'fantasy' }}>Pixel6 CRUD Application</Box>
                     <Button className={classes.activeButton} onClick={() => setOpenAddCustomerDialog(true)}>Add Customer</Button>
                 </Grid>
-                <Grid style={{ width: '100%', height: 'calc(100% - 4rem)', backgroundColor: 'white', display: 'flex', flexDirection: 'column', padding: '0.25rem', borderBottomLeftRadius: 'inherit', borderBottomRightRadius: 'inherit' }}>
+                <Grid style={{ width: '100%', height: 'calc(100% - 4rem)', backgroundColor: 'white', display: 'flex', flexDirection: 'column', padding: '0.25rem', borderBottomLeftRadius: 'inherit', borderBottomRightRadius: 'inherit', overflow:'auto' }}>
                     {
                         customers.length > 0 ?
                             <>
-                                <Grid style={{ backgroundColor: 'gray', display: 'flex', alignItems: 'center', padding: '15px 0px', color: 'white', borderTopLeftRadius: '5px', borderTopRightRadius: '5px', position: 'sticky', paddingRight: '4px' }}>
+                                <Grid className={classes.tableTitleRowContainer}>
                                     <Box style={{ width: '5%' }} className={classes.column}>Sr No</Box>
                                     <Box style={{ width: '20%' }} className={classes.column}>Customer Name</Box>
                                     <Box style={{ width: '20%' }} className={classes.column}>Email</Box>
@@ -75,10 +87,10 @@ function CustomersPage() {
                                     <Box style={{ width: '30%' }} className={classes.column}>Address</Box>
                                     <Box style={{ width: '15%', border: 'none' }} className={classes.column}>Actions</Box>
                                 </Grid>
-                                <Grid style={{ height: '100%', width: '100%', overflowY: 'auto', border: '1px solid gray' }}>
+                                <Grid style={{ height: '100%', width: '100%', border: '1px solid gray', minWidth:'1000px' }}>
                                     {
                                         customers.map((customer, index) => (
-                                            <Grid style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0px', borderBottom: '1px solid lightgrey', minHeight: '4rem', overflow: 'hidden' }} key={index}>
+                                            <Grid className={classes.tableEntryRowContainer} key={index}>
                                                 <Box style={{ width: '5%' }} className={classes.column}>{index + 1}</Box>
                                                 <Box style={{ width: '20%' }} className={classes.column}>{customer.customerName}</Box>
                                                 <Box style={{ width: '20%' }} className={classes.column}>{customer.customerEmail}</Box>
@@ -88,12 +100,12 @@ function CustomersPage() {
                                                 <Box style={{ width: '30%', maxHeight: '10rem', flexDirection: 'column', overflowY: 'auto', justifyContent: 'flex-start' }} className={classes.column}>
                                                     {
                                                         customer.addresses.map((address, index) => (
-                                                            <Grid style={{ height: '100%', backgroundColor: index%2 == 0 ? 'lightgray' : 'whitesmoke', margin: '5px', display: 'flex', flexDirection: 'column', border: '1px solid black', padding: '5px', borderRadius: '5px' }}>
-                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>Address Line 1 : </Box> <Box style={{marginLeft: '5px'}}>{address.addressLine1}</Box></Grid>
-                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>Address Line 2 : </Box> <Box style={{marginLeft: '5px'}}>{address.addressLine2}</Box></Grid>
-                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>Post Code : </Box> <Box style={{marginLeft: '5px'}}>{address.postCode}</Box></Grid>
-                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>City : </Box> <Box style={{marginLeft: '5px'}}>{address.city}</Box></Grid>
-                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>State : </Box> <Box style={{marginLeft: '5px'}}>{address.state}</Box></Grid>
+                                                            <Grid style={{ height: '100%', backgroundColor: index % 2 == 0 ? 'lightgray' : 'whitesmoke', margin: '5px', display: 'flex', flexDirection: 'column', border: '1px solid black', padding: '5px', borderRadius: '5px' }}>
+                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>Address Line 1 : </Box> <Box style={{ marginLeft: '5px' }}>{address.addressLine1}</Box></Grid>
+                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>Address Line 2 : </Box> <Box style={{ marginLeft: '5px' }}>{address.addressLine2}</Box></Grid>
+                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>Post Code : </Box> <Box style={{ marginLeft: '5px' }}>{address.postCode}</Box></Grid>
+                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>City : </Box> <Box style={{ marginLeft: '5px' }}>{address.city}</Box></Grid>
+                                                                <Grid style={{ display: 'flex' }}><Box style={{ fontWeight: 'bold' }}>State : </Box> <Box style={{ marginLeft: '5px' }}>{address.state}</Box></Grid>
                                                             </Grid>
                                                         ))
                                                     }
@@ -115,7 +127,7 @@ function CustomersPage() {
 
                 </Grid>
                 {
-                    openAddCustomerDialog && <AddCustomerDialog open={openAddCustomerDialog} onClose={() => {setCustomerIndex(null);setEditCustomer(false);setOpenAddCustomerDialog(false)}} editCustomerDetails={editCustomer} customerIndex={customerIndex} />
+                    openAddCustomerDialog && <AddCustomerDialog open={openAddCustomerDialog} onClose={() => { setCustomerIndex(null); setEditCustomer(false); setOpenAddCustomerDialog(false) }} editCustomerDetails={editCustomer} customerIndex={customerIndex} />
                 }
             </Grid>
         </>
